@@ -9,19 +9,35 @@ struct DatePickerOptions: Record {
     var maximumDate: Double = 0
     
   @Field
-    var type: String = "";
+    var value: Double = 0
+    
+  @Field
+    var mode: String = "";
 }
 
 
 public class DatePickerModule: Module {
+    var alertController: UIAlertController? = nil;
+    
+
   public func definition() -> ModuleDefinition {
-        Name("DatePicker")
-
-
+      Name("DatePicker")
+      
+      AsyncFunction("dismiss") { (promise: Promise) in
+          self.alertController?.dismiss(animated: true);
+          self.alertController = nil;
+          promise.resolve()
+      }.runOnQueue(.main)
+      
       AsyncFunction("open") { (options: DatePickerOptions, promise: Promise) in
           
           let datePicker = UIDatePicker()
           datePicker.datePickerMode = .dateAndTime
+          
+          if (options.value != 0) {
+              datePicker.date =  Date(timeIntervalSince1970: options.value);
+          }
+          
           if (options.minimumDate != 0) {
               datePicker.minimumDate =  Date(timeIntervalSince1970: options.minimumDate);
           }
@@ -30,12 +46,12 @@ public class DatePickerModule: Module {
               datePicker.maximumDate =  Date(timeIntervalSince1970: options.maximumDate);
           }
         
-          if (options.type != "") {
-              if (options.type == "datetime") {
+          if (options.mode != "") {
+              if (options.mode == "datetime") {
                   datePicker.datePickerMode = .dateAndTime
-              } else if (options.type == "date") {
+              } else if (options.mode == "date") {
                   datePicker.datePickerMode = .date
-              } else if (options.type == "time") {
+              } else if (options.mode == "time") {
                   datePicker.datePickerMode = .time
               }
           }
@@ -49,7 +65,8 @@ public class DatePickerModule: Module {
 
           
           let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-
+          self.alertController = alert;
+          
           alert.view.addSubview(datePicker)
 
           
@@ -73,11 +90,13 @@ public class DatePickerModule: Module {
           let okAction = UIAlertAction(title: "OK", style: .default) { _ in
               let selectedDate = datePicker.date
               promise.resolve(selectedDate.timeIntervalSince1970 * 1000);
+              self.alertController = nil;
           }
             alert.view.frame = datePicker.frame;
 
           let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {_ in
                 promise.reject(Exception(name: "dismissed", description: "User dismissed the picker"));
+              self.alertController = nil;
             })
 
           // Add the action to the alert controller
