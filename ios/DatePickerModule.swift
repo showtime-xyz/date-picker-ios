@@ -18,6 +18,7 @@ struct DatePickerOptions: Record {
 
 public class DatePickerModule: Module {
     var alertController: UIAlertController? = nil;
+    var alertWindow: UIWindow? = nil;
     
 
   public func definition() -> ModuleDefinition {
@@ -26,6 +27,7 @@ public class DatePickerModule: Module {
       AsyncFunction("dismiss") { (promise: Promise) in
           self.alertController?.dismiss(animated: true);
           self.alertController = nil;
+          self.alertWindow = nil
           promise.resolve()
       }.runOnQueue(.main)
       
@@ -91,12 +93,14 @@ public class DatePickerModule: Module {
               let selectedDate = datePicker.date
               promise.resolve(selectedDate.timeIntervalSince1970 * 1000);
               self.alertController = nil;
+              self.alertWindow = nil
           }
             alert.view.frame = datePicker.frame;
 
           let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {_ in
                 promise.reject(Exception(name: "dismissed", description: "User dismissed the picker"));
               self.alertController = nil;
+              self.alertWindow = nil
             })
 
           // Add the action to the alert controller
@@ -105,10 +109,14 @@ public class DatePickerModule: Module {
 
          
 
+          let alertWindow = UIWindow(frame: UIScreen.main.bounds)
+          alertWindow.rootViewController = UIViewController()
+          alertWindow.windowLevel = UIWindow.Level.alert + 1;
+          alertWindow.makeKeyAndVisible()
+          alertWindow.rootViewController?.present(alert, animated: true)
           
-          UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.rootViewController?.present(alert, animated: true) {
-              
-          }
+          self.alertWindow = alertWindow;
+
       }.runOnQueue(.main)
   }
 }
