@@ -65,13 +65,13 @@ public class DatePickerModule: Module {
                 datePicker.preferredDatePickerStyle = .wheels
             }
 
-
+          
           let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
           self.alertController = alert;
-
+          
           alert.view.addSubview(datePicker)
 
-
+          
           // make height equal to date picker and adjust for Ok and Cancel buttons
           let heightConstraint = NSLayoutConstraint(item: alert.view as Any, attribute: .height, relatedBy: .equal, toItem: datePicker, attribute: .height, multiplier: 1, constant:  2 * 80)
           alert.view.addConstraint(heightConstraint)
@@ -80,14 +80,16 @@ public class DatePickerModule: Module {
           alert.view.addConstraint(widthConstraint)
 
           // Adds some padding top to date picker
-          datePicker.bounds = datePicker.frame
+          datePicker.bounds = datePicker.frame.insetBy(dx: 0.0, dy: -32.0);
 
 
+          
           // Horizontally center date picker
           datePicker.translatesAutoresizingMaskIntoConstraints = false
           NSLayoutConstraint.activate([
             datePicker.centerXAnchor.constraint(equalTo: alert.view.centerXAnchor),
           ])
+        
 
           // Add an action to the alert controller that will trigger when the user selects a date
           let okAction = UIAlertAction(title: "OK", style: .default) { _ in
@@ -108,19 +110,19 @@ public class DatePickerModule: Module {
           alert.addAction(okAction)
           alert.addAction(cancelAction)
 
-
          
+
           let alertWindow = UIWindow(frame: UIScreen.main.bounds)
           alertWindow.rootViewController = UIViewController()
           alertWindow.windowLevel = UIWindow.Level.alert + 1;
           alertWindow.makeKeyAndVisible()
-
+          
           alert.popoverPresentationController?.sourceView = alertWindow
           alert.popoverPresentationController?.sourceRect = CGRect(x: alertWindow.bounds.midX, y: alertWindow.bounds.midY, width: 0, height: 0)
           alert.popoverPresentationController?.permittedArrowDirections = []
-          
-          alertWindow.rootViewController?.present(alert, animated: true)
 
+          alertWindow.rootViewController?.present(alert, animated: true)
+          
           self.alertWindow = alertWindow;
 
       }.runOnQueue(.main)
