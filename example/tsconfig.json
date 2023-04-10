@@ -3,8 +3,8 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "date-picker": ["../src/index"],
-      "date-picker/*": ["../src/*"]
+      "@showtime-xyz/date-picker": ["../src/index"],
+      "@showtime-xyz/date-picker/*": ["../src/*"]
     }
   }
 }

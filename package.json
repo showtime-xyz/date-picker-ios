@@ -1,5 +1,5 @@
 {
-  "name": "date-picker",
+  "name": "@showtime-xyz/date-picker",
   "version": "0.2.0",
   "description": "My new module",
   "main": "build/index.js",
@@ -39,5 +39,8 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
