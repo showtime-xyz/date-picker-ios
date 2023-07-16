@@ -76,6 +76,9 @@ public class DatePickerModule: Module {
           let heightConstraint = NSLayoutConstraint(item: alert.view as Any, attribute: .height, relatedBy: .equal, toItem: datePicker, attribute: .height, multiplier: 1, constant:  2 * 80)
           alert.view.addConstraint(heightConstraint)
 
+          let widthConstraint = NSLayoutConstraint(item: alert.view as Any, attribute: .width, relatedBy: .equal, toItem: datePicker, attribute: .width, multiplier: 1, constant: 32)
+          alert.view.addConstraint(widthConstraint)
+
           // Adds some padding top to date picker
           datePicker.bounds = datePicker.frame.insetBy(dx: 0.0, dy: -32.0);
 
@@ -113,6 +116,11 @@ public class DatePickerModule: Module {
           alertWindow.rootViewController = UIViewController()
           alertWindow.windowLevel = UIWindow.Level.alert + 1;
           alertWindow.makeKeyAndVisible()
+          
+          alert.popoverPresentationController?.sourceView = alertWindow
+          alert.popoverPresentationController?.sourceRect = CGRect(x: alertWindow.bounds.midX, y: alertWindow.bounds.midY, width: 0, height: 0)
+          alert.popoverPresentationController?.permittedArrowDirections = []
+
           alertWindow.rootViewController?.present(alert, animated: true)
           
           self.alertWindow = alertWindow;
